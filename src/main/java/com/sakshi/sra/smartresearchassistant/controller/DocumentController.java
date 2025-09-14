@@ -35,4 +35,14 @@ public class DocumentController {
     }
 
     // We'll add LIST, GET-BY-ID, DELETE in the next sub-steps
+
+    @GetMapping
+    public java.util.List<DocumentResponse> findAll() {
+        return service.findAll()
+                .stream()
+                .map(d -> new DocumentResponse(
+                        d.getId(), d.getTitle(), d.getAuthor(), d.getSourceUrl(), d.getNote(), d.getCreatedAt()
+                ))
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
