@@ -45,4 +45,14 @@ public class DocumentController {
                 ))
                 .collect(java.util.stream.Collectors.toList());
     }
+
+    // --- STEP 3C: GET BY ID ---
+    @GetMapping("/{id}")
+    public DocumentResponse findOne(@PathVariable("id") UUID id) {
+        Document d = service.findById(id);
+        return new DocumentResponse(
+                d.getId(), d.getTitle(), d.getAuthor(), d.getSourceUrl(), d.getNote(), d.getCreatedAt()
+        );
+    }
+
 }
