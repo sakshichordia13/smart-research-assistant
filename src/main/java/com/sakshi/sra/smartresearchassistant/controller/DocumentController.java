@@ -61,4 +61,22 @@ public class DocumentController {
         service.delete(id);
     }
 
+
+
+    @GetMapping("/search")
+    public java.util.List<com.sakshi.sra.smartresearchassistant.dto.DocumentResponse> search(
+            @RequestParam("q") String q) {
+
+        if (q == null || q.trim().isEmpty()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "query parameter 'q' is required");
+        }
+
+        return service.search(q).stream()
+                .map(d -> new com.sakshi.sra.smartresearchassistant.dto.DocumentResponse(
+                        d.getId(), d.getTitle(), d.getAuthor(), d.getSourceUrl(), d.getNote(), d.getCreatedAt()
+                ))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
 }

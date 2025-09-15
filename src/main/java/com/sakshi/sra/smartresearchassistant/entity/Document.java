@@ -30,6 +30,12 @@ public class Document {
     @Column(nullable = false, columnDefinition = "timestamp with time zone")
     private OffsetDateTime createdAt;
 
+    @Column(name = "file_path")
+    private String filePath;
+
+    @Column(name = "content_text", columnDefinition = "text")
+    private String contentText;
+
     protected Document() { /* JPA */ }
 
     public Document(UUID id, String title, String author,
@@ -54,4 +60,8 @@ public class Document {
     public void setNote(String note) { this.note = note; }
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
+    public String getFilePath() { return filePath; }
+    public void setFilePath(String fp) { this.filePath = fp; }
+    public String getContentText() { return contentText; }
+    public void setContentText(String ct) { this.contentText = ct; }
 }

@@ -5,6 +5,12 @@ import com.sakshi.sra.smartresearchassistant.entity.Document;
 import com.sakshi.sra.smartresearchassistant.exception.NotFoundException;
 import com.sakshi.sra.smartresearchassistant.repository.DocumentRepository;
 import org.springframework.stereotype.Service;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -45,5 +51,35 @@ public class DocumentService {
             throw new NotFoundException("Document not found: " + id);
         }
         repo.deleteById(id);
+    }
+
+    public Document createFromPdf(MultipartFile file, String title, String author) throws IOException {
+        // Save file
+        Path uploadDir = Paths.get(System.getProperty("user.home"), "smart-research-uploads");
+        Files.createDirectories(uploadDir);
+        String unique = java.util.UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path saved = uploadDir.resolve(unique);
+        file.transferTo(saved.toFile());
+
+        // Extract text
+        String text = "";
+        try (PDDocument pdf = PDDocument.load(saved.toFile())) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            text = stripper.getText(pdf);
+        }
+
+        Document doc = new Document(
+                null, title, author, null, null, java.time.OffsetDateTime.now()
+        );
+        doc.setFilePath(saved.toString());
+        doc.setContentText(text);
+        return repo.save(doc);
+    }
+
+    public java.util.List<com.sakshi.sra.smartresearchassistant.entity.Document> search(String q) {
+        if (q == null || q.trim().isEmpty()) {
+            return java.util.List.of();
+        }
+        return repo.keywordSearch(q.trim());
     }
 }
